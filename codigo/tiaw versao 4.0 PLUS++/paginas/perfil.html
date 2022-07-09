@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Cadastro de Contatos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/styleperfil.css">
+</head>
+
+<body onload="init()">
+    <h1>Perfil</h1>
+
+    <div class="container">
+        <div class="row">
+            <div id="msg" class="col-sm-10 offset-sm-1 ">
+            </div>
+        </div>
+
+        <form id="form-contato">
+            <div class="form-group row">
+                <div class="col-sm-12">
+                    <label for="inputApelido">Apelido (*)</label>
+                    <input type="text" class="form-control" id="inputApelido" required
+                        placeholder="Informe o Apelido/apelido">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-12">
+                    <label for="inputApelido">Biografia (*)</label>
+                    <input type="text" class="form-control" id="inputBiografia" required
+                        placeholder="Informe o Apelido/apelido">
+                </div>
+            </div>
+            
+            
+            <div class="form-group row">
+                <div class="col-sm-4">
+                    <small>(*) Campos obrigatórios</small>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-12">
+                    <a href="home.html"><input type="button" class="btn btn btn-warning" id="btnUpdate" value="Salvar"></a>
+                    <a href="profile.html"><input type="button" class="btn btn btn-warning" id="btnUpdate" value="Sair"></a>
+                </div>
+            </div>
+        </form>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="../js/jsperfil.js"></script>
+    <script>
+        function exibeContatos() {
+            // Remove todas as linhas do corpo da tabela
+            $("#table-contatos").html("");
+
+            // Popula a tabela com os registros do banco de dados
+            for (i = 0; i < db.data.length; i++) {
+                let contato = db.data[i];
+                $("#table-contatos").append(`<tr><td scope="row">${contato.id}</td>
+                                                <td>${contato.Apelido}</td>
+                                                <td>${contato.Gênero}</td>
+                                                <td>${contato.Datadenascimento}</td>
+                                                <td>${contato.Email}</td>
+                                                <td>${contato.Biografia}</td>                                              
+                                                <td>${contato.Nome}</td>
+                                            </tr>`);
+            }
+        }
+
+        function init() {
+            // Adiciona funções para tratar os eventos 
+            $("#btnInsert").click(function () {
+                // Verfica se o formulário está preenchido corretamente
+                if (!$('#form-contato')[0].checkValidity()) {
+                    displayMessage("Preencha o formulário corretamente.");
+                    return;
+                }
+
+                // Obtem os valores dos campos do formulário
+                let campoApelido = $("#inputApelido").val();
+                let campoGênero = $("#inputGênero").val();
+                let campoDatadenascimento = $('#inputDatadenascimento').val();
+                let campoEmail = $('#inputEmail').val();
+                let campoBiografia = $("#inputBiografia").val();
+                let campoNome = $('#inputNome').val();
+                let contato = {
+                    Apelido: campoApelido,
+                    Gênero: campoGênero,
+                    Datadenascimento: campoDatadenascimento,
+                    Email: campoEmail,
+                    Biografia: campoBiografia,
+                    Nome: campoNome
+                };
+
+                insertContato(contato);
+
+                // Reexibe os contatos
+                exibeContatos();
+
+                // Limpa o formulario
+                $("#form-contato")[0].reset();
+            });
+
+            // Intercepta o click do botão Alterar
+            $("#btnUpdate").click(function () {
+                // Obtem os valores dos campos do formulário
+                let campoId = $("#inputId").val();
+                if (campoId == "") {
+                    displayMessage("Selecione um contato para ser alterado.");
+                    return;
+                }
+                let campoApelido = $("#inputApelido").val();
+                let campoGênero = $("#inputGênero").val();
+                let campoDatadenascimento = $("#inputDatadenascimento").val();
+                let campoEmail = $("#inputEmail").val();
+                let campoBiografia = $("#inputBiografia").val();
+                let campoNome = $('#inputNome').val();
+                let contato = {
+                    Apelido: campoApelido,
+                    Gênero: campoGênero,
+                    Datadenascimento: campoDatadenascimento,
+                    Email: campoEmail,
+                    Biografia: campoBiografia,
+                    Nome: campoNome
+                };
+
+                updateContato(parseInt(campoId), contato);
+
+                // Reexibe os contatos
+                exibeContatos();
+
+                // Limpa o formulario
+                $("#form-contato")[0].reset();
+            });
+
+            // Intercepta o click do botão Excluir
+            $("#btnDelete").click(function () {
+                let campoId = $("#inputId").val();
+                if (campoId == "") {
+                    displayMessage("Selecione um contato a ser excluído.");
+                    return;
+                }
+                deleteContato(parseInt(campoId));
+
+                // Reexibe os contatos
+                exibeContatos();
+
+                // Limpa o formulario
+                $("#form-contato")[0].reset();
+            });
+
+            // Intercepta o click do botão Listar Contatos
+            $("#btnClear").click(function () {
+                $("#form-contato")[0].reset();
+            });
+
+            // Oculta a mensagem de aviso após alguns segundos
+            $('#msg').bind("DOMSubtreeModified", function () {
+                window.setTimeout(function () {
+                    $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                        $(this).remove();
+                    });
+                }, 5000);
+            });
+
+            // Preenche o formulário quando o usuario clicar em uma linha da tabela 
+            $("#grid-contatos").on("click", "tr", function (e) {
+                let linhaContato = this;
+                colunas = linhaContato.querySelectorAll("td");
+
+                $("#inputId").val(colunas[0].innerText);
+                $("#logado").val(colunas[1].innerText);
+                $("#inputGênero").val(colunas[2].innerText);
+                $("#inputDatadenascimento").val(colunas[3].innerText);
+                $("#inputEmail").val(colunas[4].innerText);
+                $("#inputBiografia").val(colunas[5].innerText);
+                $("#inputNome").val(colunas[6].innerText);
+            });
+
+            exibeContatos();
+        }
+    </script>
+</body>
+
+</html>

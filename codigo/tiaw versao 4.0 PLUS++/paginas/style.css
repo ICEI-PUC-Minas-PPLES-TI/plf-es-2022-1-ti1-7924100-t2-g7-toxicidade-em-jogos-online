@@ -1,0 +1,43 @@
+label {
+    font-weight: bolder;
+    color: #b4babf;
+}
+::placeholder {
+    color: #b4babf !important;
+    opacity: 3;
+}
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color: #b4babf !important;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #b4babf !important;
+    opacity:  3;
+ }
+ h1 {
+     text-align: center;
+     color: #e2d06a;
+     padding-top: 20px;
+ }
+ #msg {
+     height: 60px;
+ }
+ #grid-contatos tbody {
+     cursor: pointer;
+ }
+
+ body{
+    background-color: #1f262d;
+ }
+ th{
+    color: #b4babf;
+ }
+ td{
+    color: #b4babf;
+ }
+ small{
+    color: #b4babf;
+ }
+ .form-control{
+    color: black
+ }
+ 
